@@ -1,0 +1,131 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: hospital-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - hospital-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: hospital-rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - hospital-network
+
+  user-service:
+    build: ./user-service
+    container_name: hospital-user-service
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      PORT: 8081
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: 123456
+      DB_NAME: user_db
+      JWT_SECRET: hospital_secret_key
+    depends_on:
+      - postgres
+    networks:
+      - hospital-network
+
+  doctor-service:
+    build: ./doctor-service
+    container_name: hospital-doctor-service
+    restart: always
+    ports:
+      - "8082:8082"
+    environment:
+      PORT: 8082
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: 123456
+      DB_NAME: doctor_db
+    depends_on:
+      - postgres
+    networks:
+      - hospital-network
+
+  appointment-service:
+    build: ./appointment-service
+    container_name: hospital-appointment-service
+    restart: always
+    ports:
+      - "8083:8083"
+    environment:
+      PORT: 8083
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: 123456
+      DB_NAME: appointment_db
+      DOCTOR_SERVICE_URL: http://doctor-service:8082
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      APPOINTMENT_CREATED_QUEUE: appointment.created.queue
+    depends_on:
+      - postgres
+      - rabbitmq
+      - doctor-service
+    networks:
+      - hospital-network
+
+  notification-service:
+    build: ./notification-service
+    container_name: hospital-notification-service
+    restart: always
+    ports:
+      - "8084:8084"
+    environment:
+      PORT: 8084
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      APPOINTMENT_CREATED_QUEUE: appointment.created.queue
+    depends_on:
+      - rabbitmq
+    networks:
+      - hospital-network
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: hospital-api-gateway
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      USER_SERVICE_URL: http://user-service:8081
+      DOCTOR_SERVICE_URL: http://doctor-service:8082
+      APPOINTMENT_SERVICE_URL: http://appointment-service:8083
+      NOTIFICATION_SERVICE_URL: http://notification-service:8084
+    depends_on:
+      - user-service
+      - doctor-service
+      - appointment-service
+      - notification-service
+    networks:
+      - hospital-network
+
+volumes:
+  postgres_data:
+
+networks:
+  hospital-network:
+    driver: bridge
