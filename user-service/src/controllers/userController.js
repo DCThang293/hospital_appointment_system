@@ -4,9 +4,9 @@ const { pool } = require("../config/db");
 
 const registerUser = async (req, res) => {
   try {
-    const { fullName, email, password, phone, role } = req.body;
-
-    if (!fullName || !email || !password) {
+    const { fullName, full_name, email, password, phone, role } = req.body;
+    const name = fullName || full_name;
+    if (!name || !email || !password) {
       return res.status(400).json({
         message: "Full name, email and password are required",
       });
@@ -30,7 +30,7 @@ const registerUser = async (req, res) => {
        (full_name, email, password, phone, role)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING id, full_name, email, phone, role, created_at`,
-      [fullName, email, hashedPassword, phone, role || "PATIENT"]
+      [name, email, hashedPassword, phone, role || "PATIENT"]
     );
 
     res.status(201).json({
@@ -158,7 +158,8 @@ const getUserById = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { fullName, phone, role } = req.body;
+    const { fullName, full_name, phone, role } = req.body;
+    const name = fullName || full_name;
 
     const result = await pool.query(
       `UPDATE users
@@ -167,7 +168,7 @@ const updateUser = async (req, res) => {
            role = COALESCE($3, role)
        WHERE id = $4
        RETURNING id, full_name, email, phone, role, created_at`,
-      [fullName, phone, role, id]
+      [name, phone, role, id]
     );
 
     if (result.rows.length === 0) {

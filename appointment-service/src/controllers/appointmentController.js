@@ -12,13 +12,18 @@ const createAppointment = async (req, res) => {
       reason,
     } = req.body;
 
-    if (!patientId || !doctorId || !appointmentDate || !appointmentTime) {
+    const patient_id = patientId || req.body.patient_id;
+    const doctor_id = doctorId || req.body.doctor_id;
+    const appointment_date = appointmentDate || req.body.appointment_date;
+    const appointment_time = appointmentTime || req.body.appointment_time;
+
+    if (!patient_id || !doctor_id || !appointment_date || !appointment_time) {
       return res.status(400).json({
-        message: "patientId, doctorId, appointmentDate and appointmentTime are required",
+        message: "patient_id, doctor_id, appointment_date and appointment_time are required",
       });
     }
 
-    const doctor = await getDoctorById(doctorId);
+    const doctor = await getDoctorById(doctor_id);
 
     if (!doctor) {
       return res.status(404).json({
@@ -31,19 +36,19 @@ const createAppointment = async (req, res) => {
        (patient_id, doctor_id, appointment_date, appointment_time, reason, status)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [patientId, doctorId, appointmentDate, appointmentTime, reason, "CONFIRMED"]
+      [patient_id, doctor_id, appointment_date, appointment_time, reason, "CONFIRMED"]
     );
     const appointment = result.rows[0];
 
     await publishAppointmentCreated({
-    eventType: "APPOINTMENT_CREATED",
-    appointmentId: appointment.id,
-    patientId: appointment.patient_id,
-    doctorId: appointment.doctor_id,
-    appointmentDate: appointment.appointment_date,
-    appointmentTime: appointment.appointment_time,
-    reason: appointment.reason,
-    status: appointment.status,
+      eventType: "APPOINTMENT_CREATED",
+      appointmentId: appointment.id,
+      patientId: appointment.patient_id,
+      doctorId: appointment.doctor_id,
+      appointmentDate: appointment.appointment_date,
+      appointmentTime: appointment.appointment_time,
+      reason: appointment.reason,
+      status: appointment.status,
     });
 
     res.status(201).json({

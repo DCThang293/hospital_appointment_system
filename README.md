@@ -63,40 +63,37 @@ Hệ thống sử dụng **kiến trúc Microservice** với các thành phần 
                     └─────────────────────┘
 ```
 
-### 2.2 Danh sách các Service
+### 2.2 Công nghệ sử dụng
+- Node.js
+- Express.js
+- PostgreSQL
+- RabbitMQ
+- Docker
+- API Gateway
+- RESTful API
+- Message Queue
+
+
+### 2.3 Danh sách các Service
 
 | Service | Chức năng | Port | Database |
 |---------|----------|------|----------|
-| **API Gateway** | Cổng truy cập duy nhất, định tuyến request | 8080 | - |
 | **User Service** | Đăng ký, đăng nhập, quản lý thông tin người dùng | 8081 | user_db |
 | **Doctor Service** | Quản lý bác sĩ, chuyên khoa, lịch làm việc | 8082 | doctor_db |
 | **Appointment Service** | Đặt lịch khám, hủy, cập nhật trạng thái | 8083 | appointment_db |
 | **Notification Service** | Gửi thông báo lịch khám (async via RabbitMQ) | 8084 | - |
-| **RabbitMQ** | Message broker cho giao tiếp async | 5672/15672 | - |
-| **PostgreSQL** | Cơ sở dữ liệu cho 3 services | 5432 | 3 databases |
 
----
-
-## 3. Mô tả các Microservice
-
-### 3.1 API Gateway Service (8080)
-**Vai trò**: Điểm truy cập duy nhất cho tất cả client
-- Nhận tất cả request từ client
-- Định tuyến request đến service thích hợp
-- Xử lý lỗi tập trung 
-- Ghi log request
-
-**Định tuyến**:
+### 2.4 Định tuyến
 - `/users/*` → User Service (8081)
 - `/doctors/*` → Doctor Service (8082)
 - `/appointments/*` → Appointment Service (8083)
 - `/notifications/*` → Notification Service (8084)
 
-**Công nghệ**: Express.js + http-proxy-middleware
-
 ---
 
-### 3.2 User Service (8081)
+## 3. Mô tả các Microservice
+
+### 3.1 User Service (8081)
 **Vai trò**: Quản lý thông tin người dùng
 
 **Chức năng chính**:
@@ -123,7 +120,7 @@ users (user_db)
 
 ---
 
-### 3.3 Doctor Service (8082)
+### 3.2 Doctor Service (8082)
 **Vai trò**: Quản lý thông tin bác sĩ và lịch làm việc
 
 **Chức năng chính**:
@@ -162,7 +159,7 @@ doctor_schedules (doctor_db)
 
 ---
 
-### 3.4 Appointment Service (8083)
+### 3.3 Appointment Service (8083)
 **Vai trò**: Quản lý lịch khám bệnh
 
 **Chức năng chính**:
@@ -200,7 +197,7 @@ appointments (appointment_db)
 
 ---
 
-### 3.5 Notification Service (8084)
+### 3.4 Notification Service (8084)
 **Vai trò**: Gửi thông báo về lịch khám (dựa trên message queue)
 
 **Chức năng chính**:
@@ -438,7 +435,7 @@ docker compose logs -f
 curl -X POST http://localhost:8080/users/register \
   -H "Content-Type: application/json" \
   -d '{
-    "full_name": "Nguyễn Văn A",
+    "fullName": "Nguyễn Văn A",
     "email": "nguyenvana@gmail.com",
     "password": "password123",
     "phone": "0912345678"
@@ -472,12 +469,12 @@ curl -X GET http://localhost:8080/doctors/
 
 ---
 
-#### Test 4: Lấy chi tiết bác sĩ (kèm lịch làm việc)
+#### Test 4: Lấy chi tiết bác sĩ
 ```bash
 curl -X GET http://localhost:8080/doctors/1
 ```
 
-**Kết quả mong muốn**: Thông tin bác sĩ + danh sách lịch làm việc
+**Kết quả mong muốn**: Thông tin bác sĩ chi tiết
 
 ---
 
@@ -486,10 +483,10 @@ curl -X GET http://localhost:8080/doctors/1
 curl -X POST http://localhost:8080/appointments/ \
   -H "Content-Type: application/json" \
   -d '{
-    "patient_id": 1,
-    "doctor_id": 1,
-    "appointment_date": "2026-05-30",
-    "appointment_time": "09:00",
+    "patientId": 1,
+    "doctorId": 1,
+    "appointmentDate": "2026-05-30",
+    "appointmentTime": "09:00",
     "reason": "Kiểm tra sức khỏe định kỳ"
   }'
 ```
