@@ -100,12 +100,12 @@ Hệ thống sử dụng **kiến trúc Microservice** với các thành phần 
 **Vai trò**: Quản lý thông tin người dùng
 
 **Chức năng chính**:
-- ✓ Đăng ký người dùng mới
-- ✓ Đăng nhập, xác thực bằng JWT
-- ✓ Lấy danh sách người dùng
-- ✓ Lấy chi tiết người dùng (theo ID)
-- ✓ Cập nhật thông tin người dùng
-- ✓ Xóa người dùng
+- Đăng ký người dùng mới
+- Đăng nhập, xác thực bằng JWT
+- Lấy danh sách người dùng
+- Lấy chi tiết người dùng (theo ID)
+- Cập nhật thông tin người dùng
+- Xóa người dùng
 
 **Database Schema**:
 ```sql
@@ -127,12 +127,12 @@ users (user_db)
 **Vai trò**: Quản lý thông tin bác sĩ và lịch làm việc
 
 **Chức năng chính**:
-- ✓ Tạo bác sĩ mới
-- ✓ Lấy danh sách bác sĩ
-- ✓ Lấy chi tiết bác sĩ (theo ID, kèm lịch làm việc)
-- ✓ Cập nhật thông tin bác sĩ
-- ✓ Xóa bác sĩ (và lịch làm việc)
-- ✓ Quản lý lịch làm việc bác sĩ
+- Tạo bác sĩ mới
+- Lấy danh sách bác sĩ
+- Lấy chi tiết bác sĩ (theo ID, kèm lịch làm việc)
+- Cập nhật thông tin bác sĩ
+- Xóa bác sĩ (và lịch làm việc)
+- Quản lý lịch làm việc bác sĩ
 
 **Database Schema**:
 ```sql
