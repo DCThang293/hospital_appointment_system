@@ -189,7 +189,7 @@ appointments (appointment_db)
 └── UNIQUE (doctor_id, appointment_date, appointment_time) -- Tránh trùng lặp
 ```
 
-**Luồng Appointment**:
+**Luồng đặt lịch**:
 1. Client gửi request đặt lịch → Appointment Service
 2. Service kiểm tra bác sĩ (gọi Doctor Service)
 3. Nếu hợp lệ → Lưu vào database
@@ -386,10 +386,10 @@ channel.consume('appointment.created.queue', (msg) => {
 
 ### 5.3 Lợi ích của Message Queue
 
-- **Loose Coupling**: Services độc lập với nhau
-- **Async Processing**: Notification Service xử lý độc lập, không chặn Appointment Service
-- **Reliability**: Message được lưu trữ, đảm bảo không mất
-- **Scalability**: Dễ dàng thêm nhiều Notification Service nếu tải tăng
+- Services độc lập với nhau
+- Notification Service xử lý độc lập, không chặn Appointment Service
+- Message được lưu trữ an toàn, đảm bảo không mất
+- Dễ dàng thêm nhiều Notification Service nếu tải tăng
 
 ---
 
@@ -563,11 +563,11 @@ docker compose logs -f
 ### 6.7 Đánh giá Hiệu suất
 
 #### Điểm mạnh
-- **Kiến trúc Microservice**: Dễ mở rộng từng service độc lập
-- **Async Processing**: Notification không chặn flow đặt lịch
-- **Isolation**: Mỗi service có database riêng, không ảnh hưởng lẫn nhau
-- **Easy Deployment**: Docker Compose đơn giản
-- **Extensible**: Dễ thêm service mới (Payment, Review, etc.)
+- Dễ mở rộng từng service độc lập
+- Notification không chặn flow đặt lịch
+- Mỗi service có database riêng, không ảnh hưởng lẫn nhau
+- Docker Compose đơn giản
+- Dễ thêm service mới (Payment, Review, etc.)
 
 #### Cần Cải Thiện
 - Chưa có authentication/authorization giữa services
