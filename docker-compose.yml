@@ -96,9 +96,15 @@ services:
       - "8084:8084"
     environment:
       PORT: 8084
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: 123456
+      DB_NAME: notification_db
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
       APPOINTMENT_CREATED_QUEUE: appointment.created.queue
     depends_on:
+      - postgres
       - rabbitmq
     networks:
       - hospital-network

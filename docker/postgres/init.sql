@@ -1,6 +1,7 @@
 CREATE DATABASE user_db;
 CREATE DATABASE doctor_db;
 CREATE DATABASE appointment_db;
+CREATE DATABASE notification_db;
 
 \c user_db;
 
@@ -88,3 +89,16 @@ BEGIN
         UNIQUE (doctor_id, appointment_date, appointment_time);
     END IF;
 END $$;
+
+\c notification_db;
+
+CREATE TABLE IF NOT EXISTS notification_logs (
+    id SERIAL PRIMARY KEY,
+    event_id UUID,
+    event_type VARCHAR(100) NOT NULL,
+    source VARCHAR(100) NOT NULL,
+    payload JSONB,
+    status VARCHAR(20) NOT NULL,
+    error_message TEXT,
+    processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

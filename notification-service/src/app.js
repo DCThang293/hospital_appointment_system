@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 const app = express();
 
@@ -12,5 +13,7 @@ app.get("/", (req, res) => {
     status: "running",
   });
 });
+
+app.use("/notifications", notificationRoutes);
 
 module.exports = app;
